@@ -1,5 +1,5 @@
 "use client"
-import fundo from './pxfuel.png'
+import fundo from './px.svg'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 
@@ -13,7 +13,7 @@ export default function Home() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:8000/predict', {
+      const response = await fetch('http://159.223.129.216:8000/predict', {
         method: 'POST',
         body: formData,
       });
@@ -68,24 +68,52 @@ export default function Home() {
 
   };
 
+  useEffect(() => {
+    // Personalize o scroll aqui, por exemplo:
+    const scrollbarStyles = `
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background-color: #4F46E5;
+        border-radius: 5px;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #7C7AE6;
+      }
+    `;
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = scrollbarStyles;
+    document.head.appendChild(styleElement);
+    
+    // Remova o estilo quando o componente for desmontado
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
   return (
     <main className=" flex min-h-screen flex-col items-center justify-center p-2" >
-      <Image className="absolute z-0 w-full h-full object-cover" src={fundo} alt="fundo" />
+      <Image className="absolute z-0 w-screen h-screen object-cover" src={fundo} alt="fundo" />
       <div className="flex bg-opacity-70  backdrop-blur-lg shadow-lg flex-col items-center justify-around rounded-lg mb-4 p-6">
         <h1 className='text-justify text-4xl p-4 pb-10'>Modelo de classificação de imagem com a base CIFR10</h1>
         <div className='flex items-center justify-between gap-4'>
           <div className='flex flex-col items-center justify-center gap-4'>
             <img src={previewImage} alt="Picture of the author" width={400} height={400} />
           </div>
-          <div className='flex flex-col  justify-center gap-4'>
+          <div className='flex flex-col  justify-center gap-4' >
             <p className='text-xl'>Resultado: {data.resu}</p>
-            {/* <p className='text-xl'>Probabilidade: {data.prob}</p> */}
+            <div className='overflow-auto' style={{ maxHeight: '400px' }}>{/* <p className='text-xl'>Probabilidade: {data.prob}</p> */}
             {data.prob && Object.entries(data.prob).map(([key, value]) => (
               <div key={key}>
                 <p className='text-lg'>Classe: {key}</p>
+                
                 <p className='text-lg'>Probabilidade: {value[0]}</p>
+                
               </div>
-            ))}
+            ))}</div>
             <form onSubmit={submitFile} >
               <div className="flex flex-col items-center justify-center gap-4">
                 <div className="flex items-center justify-center">
